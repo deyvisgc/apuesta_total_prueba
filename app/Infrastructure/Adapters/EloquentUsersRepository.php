@@ -12,7 +12,9 @@ class EloquentUsersRepository implements UsersRepositoryInterface
         $users = new ModelsUser();
         $users->email = $userEntity->getEmail();
         $users->password = bcrypt($userEntity->getPasword());
-        $users->cliente_id = $userEntity->getIdClient();
+        $users->client_id = $userEntity->getIdClient();
+        $users->sales_id = $userEntity->getIdSales();
+        $users->role_id = $userEntity->getRole();
         $users->save();
     }
     public function find($id) {

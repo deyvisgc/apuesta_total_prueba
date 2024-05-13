@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClientResource extends JsonResource
+class SalesConsultantResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,13 +21,11 @@ class ClientResource extends JsonResource
             'nombre' => $this->person->name,
             'direccion' => $this->person->addres,
             'telefono' => $this->person->phone,
-            'idJugador' => $this->player_id,
-            'saldo' => $this->balance,
             'codDepartamento' => $this->person->cod_departament,
             'codProvincia' => $this->person->cod_province,
             'codDistrito' => $this->person->cod_district,
             'FechaRegistro' => $this->created_at,
-            'email' => $this->user->email,
+            'email' => $this->usuario->email,
         ];
     }
 }

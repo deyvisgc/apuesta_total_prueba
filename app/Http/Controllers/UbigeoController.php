@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Application\UseCases\FindDepartamentUseCase;
-use App\Application\UseCases\FindDistrictUseCase;
-use App\Application\UseCases\FindProvinceUseCase;
+use App\Application\UseCases\Ubigeo\FindDepartamentUseCase;
+use App\Application\UseCases\Ubigeo\FindDistrictUseCase;
+use App\Application\UseCases\Ubigeo\FindProvinceUseCase;
 use App\Http\Resources\DepartamentResource;
 use App\Http\Resources\DistrictResource;
 use App\Http\Resources\ProvinceResource;
@@ -24,6 +24,7 @@ class UbigeoController extends Controller
         $this->findDepartamentUseCase = $findDepartamentUseCase;
         $this->findProvinceUseCase = $findProvinceUseCase;
         $this->findDistrictUseCase = $findDistrictUseCase;
+        $this->middleware('auth:api', ['except' => ['findDepartament', 'findProvince', 'findDistrict']]);
     }
 
     public function findDepartament() {
@@ -34,10 +35,8 @@ class UbigeoController extends Controller
         $result = $this->findProvinceUseCase->execute($idDepar);
         return ProvinceResource::collection($result);
     }
-    public function findDistrict(Request $request) {
-        $idProv = $request->input('id_prov');
-
-        $result = $this->findDistrictUseCase->execute($idProv);
+    public function findDistrict(string $idProvin) {
+        $result = $this->findDistrictUseCase->execute($idProvin);
         return DistrictResource::collection($result);
     }
 }

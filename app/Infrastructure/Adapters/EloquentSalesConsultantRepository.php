@@ -2,17 +2,17 @@
 
 namespace App\Infrastructure\Adapters;
 
-use App\Domain\Entities\ClientEntity;
 use App\Domain\Entities\PersonEntity;
+use App\Domain\Entities\SalesConsultantEntity;
 use App\Domain\Entities\UserEntity;
-use App\Domain\Repositories\ClientRepositoryInterface;
+use App\Domain\Repositories\SalesConsultantRepositoryInterface;
 use App\Domain\Repositories\UsersRepositoryInterface;
-use App\Models\Client as ModelClient;
 use App\Models\Person as ModelPerson;
+use App\Models\SalesConsultant as ModelSalesConsultant;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-class EloquentClientRepository implements ClientRepositoryInterface
+class EloquentSalesConsultantRepository implements SalesConsultantRepositoryInterface
 {
     protected $usersRepositoryInterface;
 
@@ -21,15 +21,15 @@ class EloquentClientRepository implements ClientRepositoryInterface
         $this->usersRepositoryInterface = $usersRepositoryInterface;
     }
     public function findAll() {
-        $clientesConUsuarios = ModelClient::with('user', 'person')->get();
+        $clientesConUsuarios = ModelSalesConsultant::with('usuario', 'person')->get();
         return $clientesConUsuarios;
     }
     public function find($id) {
-        $clientes = ModelClient::with('user', 'person')->find($id);
+        $clientes = ModelSalesConsultant::with('usuario', 'person')->find($id);
         return  $clientes;
     }
     
-    public function create(PersonEntity $personEntity, ClientEntity $clientEntity, UserEntity $userEntity)
+    public function create(PersonEntity $personEntity, UserEntity $userEntity)
     {
         try {
             // Inicia una transacción
@@ -44,22 +44,16 @@ class EloquentClientRepository implements ClientRepositoryInterface
             $person->cod_province = $personEntity->getCodProv();
             $person->cod_district = $personEntity->getCodDist();
             $person->save();
-
-            $clientEntity->setIdPerson($person->id);
-            $clientModel = new ModelClient();
-            $clientModel->player_id = $clientEntity->getPlayerId();
-            $clientModel->balance = $clientEntity->getBalance();
-            $clientModel->person_id = $clientEntity->getPersonId();
-            $clientModel->save();
-            
-            $userEntity->setIdClient($clientModel->id);
+            $salesModel = new ModelSalesConsultant();
+            $salesModel->person_id = $person->id;
+            $salesModel->save();
+            $userEntity->setIdSales($salesModel->id);
             $this->usersRepositoryInterface->create($userEntity);
             // Si todo va bien, confirma la transacción
             DB::commit();
             $res = [
                 'message' => 'Cuenta creada exitosamente!',
-                'status' => 'success',
-                'data' => $clientEntity
+                'status' => 'success'
             ];
             return response()->json($res, 201);
         } catch (QueryException $e) {
@@ -73,9 +67,9 @@ class EloquentClientRepository implements ClientRepositoryInterface
             DB::rollback();
         }
     }
-    public function update(int $id, ClientEntity $client){
+    public function update(int $id, SalesConsultantEntity $sales){
         try {
-            $cliente = ModelClient::find($id);
+            return null;
             // if ($cliente) {
             //     $update = [
             //         'name' => $client->getName(),
